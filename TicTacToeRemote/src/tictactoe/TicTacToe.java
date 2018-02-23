@@ -30,29 +30,39 @@ public class TicTacToe extends JFrame implements ActionListener{
     private JPanel boardPanel;
     private JPanel menuPanel = new JPanel();
     private JPanel screenPanel;
-
-    public TicTacToe() {
+    private int gameId;
+    private int playerId;
+    
+    public TicTacToe(int gameId, int playerId) {
+        this.gameId = gameId;
+        this.playerId = playerId;
         setTitle("TicTacToe Game");
         setBounds(50, 50, 500, 450);
-        
         wholeScreen = new GridLayout(1, 2);
         board = new GridLayout(3, 3);
         boardPanel = new JPanel();
         screenPanel = new JPanel();
-
+        DataBase db = new DataBase();
         boardPanel.setLayout(board);
         screenPanel.setLayout(wholeScreen);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 squares[i][j] = new JButton();
                 // adpated from https://stackoverflow.com/questions/21879243/how-to-create-on-click-event-for-buttons-in-swing
+                squares[i][j].putClientProperty("x", i);
+                squares[i][j].putClientProperty("y", j);
                 squares[i][j].addActionListener(new ActionListener() {
-                    
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // https://stackoverflow.com/questions/20818927/how-to-access-a-jframe-from-anonymous-actionlistener-for-adding-a-panel-in-frame
                         JButton button = (JButton)e.getSource();
-                        button.setText("X");
+                        int x = (int) button.getClientProperty("x");
+                        int y = (int) button.getClientProperty("y");
+                        if(db.playMove(gameId, playerId, x, y)) {
+                            markField(true, x, y);
+                            curPlayerName.setText("It's the other players move.");
+                            disableButtons();
+                        }
                     }
                 });    
                 squares[i][j].setSize(200, 200);
@@ -75,10 +85,45 @@ public class TicTacToe extends JFrame implements ActionListener{
         pack();
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        UpdateThread updThread = new UpdateThread(this);
+        updThread.start();
     }
     
     @Override
     public void actionPerformed(ActionEvent e){
         throw new UnsupportedOperationException("asd");
+    }
+    
+    public int getGameId(){
+        return this.gameId;
+    }
+    
+     public int getplayerId(){
+        return this.playerId;
+    }
+     
+    public void markField(boolean p1, int x, int y) {
+        if (p1) {
+            squares[x][y].setText("X");
+        } else {
+            squares[x][y].setText("O");
+        }
+    }
+    
+    public void disableButtons() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                squares[i][j].setEnabled(false);
+            }
+        }
+    }
+    
+    public void enableButtons() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(squares[i][j].getText().equals(""))
+                    squares[i][j].setEnabled(true);
+            }
+        }
     }
 }

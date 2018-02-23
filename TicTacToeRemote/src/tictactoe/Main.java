@@ -11,6 +11,8 @@ package tictactoe;
  */
 public class Main {
     public static void main(String[] args) {
-        TicTacToe frame = new TicTacToe();
+        //TicTacToe frame = new TicTacToe();
+        Start start = new Start();
+        //DataBase db = new DataBase();
     }
 }

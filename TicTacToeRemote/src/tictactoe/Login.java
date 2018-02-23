@@ -32,7 +32,7 @@ public class Login extends JFrame implements ActionListener{
     public Login() {
         setTitle("Login");
         setBounds(50, 50, 500, 450);
-        
+        DataBase db = new DataBase();
         wholeScreen = new GridLayout(2, 2);
         screenPanel = new JPanel();
         screenPanel.setLayout(wholeScreen);
@@ -48,6 +48,17 @@ public class Login extends JFrame implements ActionListener{
         });    
 
         submit = new JButton("Submit");
+        submit.addActionListener(new ActionListener() {
+            @Override   
+            public void actionPerformed(ActionEvent e) {
+                int id = db.checkUser(username.getText(), password.getText());
+                if (id > 0) {
+                    GameList gameList = new GameList(id);
+                    //gameList.setVisible(true);
+                    dispose();
+                } 
+            }
+        });  
         username = new JTextField("Username");
         password = new JPasswordField();
         screenPanel.add(username);

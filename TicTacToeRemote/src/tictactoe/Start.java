@@ -21,56 +21,40 @@ import javax.swing.JTextField;
  *
  * @author hidden
  */
-public class Register extends JFrame implements ActionListener{
-    private JButton clear;
-    private JButton submit;
-    private JTextField name;
-    private JTextField surname;
-    private JTextField email;
-    private JTextField username;
-    private JPasswordField password;
+public class Start extends JFrame implements ActionListener{
+    private JButton register;
+    private JButton login;
+
     private GridLayout wholeScreen;
     private JPanel screenPanel;
 
-    public Register() {
-        setTitle("Register new account");
+    public Start() {
+        setTitle("TicTacToe");
         setBounds(50, 50, 500, 450);
         DataBase db = new DataBase();
-        wholeScreen = new GridLayout(2, 4);
+        wholeScreen = new GridLayout(1, 2);
         screenPanel = new JPanel();
         screenPanel.setLayout(wholeScreen);
         //add(boardPanel);
-        clear = new JButton("Clear");
-        clear.addActionListener(new ActionListener() {
+        register = new JButton("Register");
+        register.addActionListener(new ActionListener() {
             @Override   
             public void actionPerformed(ActionEvent e) {
-                username.setText("");
-                password.setText("");
+                Register register = new Register();
+                dispose();
             }
         });    
 
-        submit = new JButton("Submit");
-        submit.addActionListener(new ActionListener() {
+        login = new JButton("Login");
+        login.addActionListener(new ActionListener() {
             @Override   
             public void actionPerformed(ActionEvent e) {
-                int id = db.addUser(name.getText(), surname.getText(), email.getText(), 
-                        username.getText(), password.getText());
-                GameList gl = new GameList(id);
+                Login login = new Login();
                 dispose();
             }
-        }); 
-        name = new JTextField("Name");
-        surname = new JTextField("Surname");
-        email = new JTextField("E-Mail");
-        username = new JTextField("Username");
-        password = new JPasswordField();
-        screenPanel.add(name);
-        screenPanel.add(surname);
-        screenPanel.add(email);
-        screenPanel.add(username);
-        screenPanel.add(password);
-        screenPanel.add(clear);
-        screenPanel.add(submit);
+        });  
+        screenPanel.add(login);
+        screenPanel.add(register);
         add(screenPanel);
         pack();
         setVisible(true);
