@@ -52,7 +52,7 @@ public class GameList extends JFrame implements ActionListener{
                 @Override   
                 public void actionPerformed(ActionEvent e) {
                     if (db.joinGame(game[0], playerId)) {
-                        TicTacToe tic = new TicTacToe(game[0], playerId);
+                        TicTacToe tic = new TicTacToe(game[0], playerId, false);
                         dispose();
                     }
                 }
@@ -69,7 +69,7 @@ public class GameList extends JFrame implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 int gameId = db.newGame(playerId);
                 if (gameId > 0) {
-                    TicTacToe tic = new TicTacToe(gameId, playerId);                    
+                    TicTacToe tic = new TicTacToe(gameId, playerId, true);                    
                     dispose();
                 }
             }

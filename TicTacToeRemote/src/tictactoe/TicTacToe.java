@@ -32,10 +32,12 @@ public class TicTacToe extends JFrame implements ActionListener{
     private JPanel screenPanel;
     private int gameId;
     private int playerId;
+    private boolean p1;
     
-    public TicTacToe(int gameId, int playerId) {
+    public TicTacToe(int gameId, int playerId, boolean p1) {
         this.gameId = gameId;
         this.playerId = playerId;
+        this.p1 = p1;
         setTitle("TicTacToe Game");
         setBounds(50, 50, 500, 450);
         wholeScreen = new GridLayout(1, 2);
@@ -59,8 +61,8 @@ public class TicTacToe extends JFrame implements ActionListener{
                         int x = (int) button.getClientProperty("x");
                         int y = (int) button.getClientProperty("y");
                         if(db.playMove(gameId, playerId, x, y)) {
-                            markField(true, x, y);
-                            curPlayerName.setText("It's the other players move.");
+                            markField(p1, x, y);
+                            curPlayerName.setText("It's the opponents turn.");
                             disableButtons();
                         }
                     }
@@ -74,7 +76,10 @@ public class TicTacToe extends JFrame implements ActionListener{
         menuPanel.setLayout(new BorderLayout());
         newGame = new JButton("Resign/Restart");
         newGame.setSize(50, 50);
-        curPlayerName = new JLabel("It's Players move");
+        if(p1)
+            curPlayerName = new JLabel("It's your turn.");
+        else
+            curPlayerName = new JLabel("It's the opponents turn.");
         curPlayerName.setSize(50, 50);
         results = new JLabel(" : : ");
         menuPanel.add(newGame, BorderLayout.NORTH);
@@ -83,6 +88,8 @@ public class TicTacToe extends JFrame implements ActionListener{
         screenPanel.add(menuPanel);
         add(screenPanel);
         pack();
+        if(!p1)
+            disableButtons();
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         UpdateThread updThread = new UpdateThread(this);
@@ -98,7 +105,11 @@ public class TicTacToe extends JFrame implements ActionListener{
         return this.gameId;
     }
     
-     public int getplayerId(){
+    public boolean getP1() {
+        return p1;
+    }
+    
+    public int getplayerId(){
         return this.playerId;
     }
      
@@ -108,6 +119,10 @@ public class TicTacToe extends JFrame implements ActionListener{
         } else {
             squares[x][y].setText("O");
         }
+    }
+    
+    public void setCurPlayerText(String t) {
+        curPlayerName.setText(t);
     }
     
     public void disableButtons() {
@@ -125,5 +140,73 @@ public class TicTacToe extends JFrame implements ActionListener{
                     squares[i][j].setEnabled(true);
             }
         }
+    }
+    
+    public boolean hasFinished() {
+        if (hasWon(true)) {
+            System.out.println("P1 won");
+            return true;
+        }
+        if (hasWon(false)) {
+            System.out.println("P2 won");
+            return true;
+        }
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(squares[i][j].getText().equals("")){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public boolean hasWon(boolean p1) {
+        String p = p1 ? "X" : "O";
+        // check lines
+        for (int i = 0; i < 3; i++) {
+            boolean winningLine = true;
+            for (int j = 0; j < 3; j++) {
+                if(!squares[i][j].getText().equals(p)){
+                    winningLine = false;
+                    break;
+                }
+            }
+            if (winningLine)
+                return true;
+        }
+        // check columns
+        for (int i = 0; i < 3; i++) {
+            boolean winningCol = true;
+            for (int j = 0; j < 3; j++) {
+                if(!squares[j][i].getText().equals(p)){
+                    winningCol = false;
+                    break;
+                }
+            }
+            if (winningCol)
+                return true;
+        }
+        // check diagonal
+        for (int i = 0; i < 3; i++) {
+            boolean winningDiag = true;
+            if(!squares[i][i].getText().equals(p)){
+                winningDiag = false;
+                break;
+            }
+            if (winningDiag)
+                return true;
+        }
+        // check other diag
+        for (int i = 0; i < 3; i++) {
+            boolean winningDiag = true;
+            if(!squares[i][2-i].getText().equals(p)){
+                winningDiag = false;
+                break;
+            }
+            if (winningDiag)
+                return true;
+        }
+        return false;
     }
 }

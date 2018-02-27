@@ -42,7 +42,7 @@ public class DataBase {
         try {
             statement = connect.createStatement();
             // Result set get the result of the SQL query
-            resultSet = statement.executeQuery("select * from games where gameState='0';");
+            resultSet = statement.executeQuery("select * from games where gameState='-1';");
             
             while(resultSet.next()) {
                 int[] game = {resultSet.getInt("autoID"), 
@@ -98,7 +98,7 @@ public class DataBase {
         try {
             // creates a new Game with the player as p1
             preparedStatement = connect.prepareStatement("insert into games(p1, p2, gameState) "
-                    + "values(?,1,0)", Statement.RETURN_GENERATED_KEYS);
+                    + "values(?,1,-1)", Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, p1);
             //preparedStatement.setInt(2, p2);
             preparedStatement.executeUpdate();
@@ -118,7 +118,7 @@ public class DataBase {
                     + "SET p2=?, gameState=? where autoID=?");
             preparedStatement.setInt(1, playerId);
             // maybe use another game state number here
-            preparedStatement.setInt(2, 1);
+            preparedStatement.setInt(2, 0);
             preparedStatement.setInt(3, gameId);
             preparedStatement.executeUpdate();
             return true;
