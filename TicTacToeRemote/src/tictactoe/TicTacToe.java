@@ -34,13 +34,15 @@ public class TicTacToe extends JFrame implements ActionListener{
     private int gameId;
     private int playerId;
     private boolean p1;
+    private String uname;
     TTTWebService_Service service = new TTTWebService_Service();
     TTTWebService proxy = service.getTTTWebServicePort();
     
-    public TicTacToe(int gameId, int playerId, boolean p1) {
+    public TicTacToe(int gameId, int playerId, boolean p1, String uname) {
         this.gameId = gameId;
         this.playerId = playerId;
         this.p1 = p1;
+        this.uname = uname;
         setTitle("TicTacToe Game");
         setBounds(50, 50, 500, 450);
         wholeScreen = new GridLayout(1, 2);
@@ -94,7 +96,7 @@ public class TicTacToe extends JFrame implements ActionListener{
                     proxy.setGameState(gameId, 2);
                 else if(!hasFinished() && !p1)
                     proxy.setGameState(gameId, 1);
-                GameList gl = new GameList(playerId);
+                GameList gl = new GameList(playerId, uname);
                 dispose();
             }
         });  
@@ -115,7 +117,7 @@ public class TicTacToe extends JFrame implements ActionListener{
             disableButtons();
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        UpdateThread updThread = new UpdateThread(this);
+        GameThread updThread = new GameThread(this);
         updThread.start();
     }
     

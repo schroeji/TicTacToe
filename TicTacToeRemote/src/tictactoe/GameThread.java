@@ -12,14 +12,14 @@ import java.util.ArrayList;
  *
  * @author hidden
  */
-public class UpdateThread extends Thread {
+public class GameThread extends Thread {
     private int playerId;
     private int gameId;
     private boolean p1;
     private TicTacToe tictac;
     TTTWebService_Service service = new TTTWebService_Service();
     TTTWebService proxy = service.getTTTWebServicePort();
-    public UpdateThread(TicTacToe tictac){
+    public GameThread(TicTacToe tictac){
         this.tictac = tictac;
         playerId = tictac.getplayerId();
         gameId = tictac.getGameId();

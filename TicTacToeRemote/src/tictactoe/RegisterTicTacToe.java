@@ -75,7 +75,7 @@ public class RegisterTicTacToe extends JFrame implements ActionListener{
                 }
                 int id = Integer.valueOf(id_str);
                 if (id > 0) {
-                    GameList gl = new GameList(id);
+                    GameList gl = new GameList(id, username.getText());
                     dispose();
                 }
             }

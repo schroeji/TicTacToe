@@ -5,118 +5,207 @@
  */
 package tictactoe;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.lang.UnsupportedOperationException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author hidden
  */
-public class GameList extends JFrame implements ActionListener{
-    private JButton createGame;
-    private GridLayout wholeScreen;
-    private GridLayout labelList;
-    private JPanel screenPanel;
-    private JPanel labelsPanel;
-    JLabel gameLabel;
+public class GameList extends javax.swing.JFrame {
     private int playerId;
+    private int selectedGid = -1;
     TTTWebService proxy = new TTTWebService_Service().getTTTWebServicePort();
-    
-    public GameList(int playerId) {
-        this.playerId = playerId;
-        setTitle("Open Games:");
-        setBounds(50, 50, 500, 450);
-        wholeScreen = new GridLayout(1, 2);
-
-        String games_string = proxy.showOpenGames();
-        System.out.println(games_string);
-        labelsPanel = new JPanel();
-        if (games_string.equals("ERROR-NOGAMES")) {
-            labelList = new GridLayout(1, 2);     
-            labelsPanel.setLayout(labelList);
-            gameLabel = new JLabel("No open games found");
-            labelsPanel.add(gameLabel);
-        } else if (games_string.equals("ERROR-DB")) {
-            labelList = new GridLayout(1, 2);     
-            labelsPanel.setLayout(labelList);
-            gameLabel = new JLabel("Database Error");
-            labelsPanel.add(gameLabel);
-        } else {
-            String[] games_arr = games_string.split("\\n");
-            labelList = new GridLayout(games_arr.length + 1, 2);     
-            labelsPanel.setLayout(labelList);
-            for (String game : games_arr) {
-                String[] game_spl = game.split(",");
-                int gid = Integer.valueOf(game_spl[0]);
-                JLabel gameLabel = new JLabel("Game:" + gid +
-                        " Player:" + game_spl[1] + " State:" + game_spl[2]);
-                JButton join = new JButton("Join");
-                join.addActionListener(new ActionListener() {
-                    @Override   
-                    public void actionPerformed(ActionEvent e) {
-                        if (proxy.joinGame(playerId, Integer.valueOf(gid)).equals("1")) {
-                            TicTacToe tic = new TicTacToe(gid, playerId, false);
-                            dispose();
-                        } 
-                    }
-                });
-                labelsPanel.add(gameLabel);
-                labelsPanel.add(join);
-            }
-        }
-        screenPanel = new JPanel();
-        screenPanel.setLayout(wholeScreen);
-        //add(boardPanel);
-        createGame = new JButton("Create Game");
-        createGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String id_str = proxy.newGame(playerId);
-                if (id_str.equals("ERROR-NOTFOUND")){
-                    JOptionPane.showMessageDialog(null, "Could not find game id.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                } else if (id_str.equals("ERROR-INSERT")) {
-                    JOptionPane.showMessageDialog(null, "Could not insert game.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                } else if (id_str.equals("ERROR-DB")) {
-                    JOptionPane.showMessageDialog(null, "Could not connect to database.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                } else if (id_str.equals("ERROR-RETRIEVE")) {
-                    JOptionPane.showMessageDialog(null, "Could not access games table.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-                int gid = Integer.valueOf(id_str);
-                if (gid > 0) {
-                    TicTacToe tic = new TicTacToe(gid, playerId, true);                    
-                    dispose();
-                }
-            }
-        });
-        labelsPanel.add(createGame);
-        screenPanel.add(labelsPanel);
-        add(screenPanel);
-        pack();
+    private String uname;
+    /**
+     * Creates new form GameList
+     */
+    public GameList(int pid, String uname) {
+        this.playerId = pid;
+        this.uname = uname;
+        initComponents();
         setVisible(true);
+        String games_string = proxy.showOpenGames();
+        if (games_string.equals("ERROR-NOGAMES")) {
+            JOptionPane.showMessageDialog(null, "No open games.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+        } else if (games_string.equals("ERROR-DB")) {
+            JOptionPane.showMessageDialog(null, "Could not access database.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            refreshGames();
+        }
+        gameList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {                                    
+                JTable source = (JTable)evt.getSource();
+                int row = source.rowAtPoint(evt.getPoint());
+                int column = 0;
+                selectedGid = Integer.parseInt(source.getModel().getValueAt(row, column).toString());
+            } 
+        });
+        GameListThread glThread = new GameListThread(this);
+        glThread.start();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
-    @Override
-    public void actionPerformed(ActionEvent e){
-        throw new UnsupportedOperationException("asd");
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        gameList = new javax.swing.JTable();
+        createGame = new javax.swing.JButton();
+        joinButton = new javax.swing.JButton();
+        leaderButton = new javax.swing.JButton();
+        scoreButton = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        gameList.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Game Id", "Username", "Timestamp"
+            }
+        ));
+        jScrollPane1.setViewportView(gameList);
+
+        createGame.setText("New Game");
+        createGame.setName("createGame"); // NOI18N
+        createGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createGameActionPerformed(evt);
+            }
+        });
+
+        joinButton.setText("Join");
+        joinButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                joinButtonActionPerformed(evt);
+            }
+        });
+
+        leaderButton.setText("Leader board");
+        leaderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leaderButtonActionPerformed(evt);
+            }
+        });
+
+        scoreButton.setText("Score board");
+        scoreButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scoreButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(joinButton)
+                    .addComponent(createGame)
+                    .addComponent(leaderButton)
+                    .addComponent(scoreButton)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(66, 66, 66)
+                .addComponent(joinButton)
+                .addGap(18, 18, 18)
+                .addComponent(createGame)
+                .addGap(18, 18, 18)
+                .addComponent(scoreButton)
+                .addGap(18, 18, 18)
+                .addComponent(leaderButton))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    public void refreshGames() {
+        String games_string = proxy.showOpenGames();
+        String[] games_arr = games_string.split("\\n");
+        String[][] games = new String[games_arr.length][];
+        int i = 0;
+        for (String game : games_arr) {
+            games[i] = game.split(",");
+            ++i;
+        }
+        String[] columns = {"GameID", "Username", "Timestamp"};
+        DefaultTableModel dataSet = new DefaultTableModel(games, columns);
+        gameList.setModel(dataSet);
+        gameList.repaint();
+        
     }
+    
+    private void joinButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinButtonActionPerformed
+        if (selectedGid > 0){
+            if (proxy.joinGame(playerId, Integer.valueOf(selectedGid)).equals("1")) {
+                TicTacToe tic = new TicTacToe(selectedGid, playerId, false, this.uname);
+                dispose();
+            }
+        }
+    }//GEN-LAST:event_joinButtonActionPerformed
+
+    private void createGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGameActionPerformed
+        String id_str = proxy.newGame(playerId);
+        if (id_str.equals("ERROR-NOTFOUND")){
+            JOptionPane.showMessageDialog(null, "Could not find game id.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else if (id_str.equals("ERROR-INSERT")) {
+            JOptionPane.showMessageDialog(null, "Could not insert game.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else if (id_str.equals("ERROR-DB")) {
+            JOptionPane.showMessageDialog(null, "Could not connect to database.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else if (id_str.equals("ERROR-RETRIEVE")) {
+            JOptionPane.showMessageDialog(null, "Could not access games table.",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int gid = Integer.valueOf(id_str);
+        if (gid > 0) {
+            TicTacToe tic = new TicTacToe(gid, playerId, true, uname);                    
+            dispose();
+        }
+
+    }//GEN-LAST:event_createGameActionPerformed
+
+    private void leaderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaderButtonActionPerformed
+        new LeaderBoard();
+    }//GEN-LAST:event_leaderButtonActionPerformed
+
+    private void scoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreButtonActionPerformed
+        new ScoreBoard(playerId, uname);
+    }//GEN-LAST:event_scoreButtonActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton createGame;
+    private javax.swing.JTable gameList;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton joinButton;
+    private javax.swing.JButton leaderButton;
+    private javax.swing.JButton scoreButton;
+    // End of variables declaration//GEN-END:variables
 }

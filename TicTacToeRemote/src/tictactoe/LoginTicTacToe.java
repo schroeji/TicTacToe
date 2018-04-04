@@ -56,7 +56,7 @@ public class LoginTicTacToe extends JFrame implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 int id = proxy.login(username.getText(), password.getText());
                 if (id > 0) {
-                    GameList gameList = new GameList(id);
+                    GameList gameList = new GameList(id, username.getText());
                     //gameList.setVisible(true);
                     dispose();
                 } else {
