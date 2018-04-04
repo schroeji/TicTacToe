@@ -5,55 +5,44 @@
  */
 package tictactoe;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.lang.UnsupportedOperationException;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author hidden
  */
-public class TicTacToe extends JFrame implements ActionListener{
-    private JButton[][] squares = new JButton[3][3];
-    private JButton newGame;
-    private JButton login;
-    private JLabel results;
-    private JLabel curPlayerName;
-    private GridLayout wholeScreen;
-    private GridLayout board;
-    private JPanel boardPanel;
-    private JPanel menuPanel = new JPanel();
-    private JPanel screenPanel;
+public class TicTacToe extends javax.swing.JFrame {
+
+    /**
+     * Creates new form TicTacToe
+     */
+    TTTWebService proxy = new TTTWebService_Service().getTTTWebServicePort();
     private int gameId;
     private int playerId;
     private boolean p1;
     private String uname;
-    TTTWebService_Service service = new TTTWebService_Service();
-    TTTWebService proxy = service.getTTTWebServicePort();
-    
+    private GridLayout board;
+    private JButton[][] squares = new JButton[3][3];
+
     public TicTacToe(int gameId, int playerId, boolean p1, String uname) {
+        initComponents();
+        setTitle("TicTacToe Game");
+        //setBounds(50, 50, 500, 450);
+        board = new GridLayout(3, 3);
+        boardPanel.setLayout(board);
         this.gameId = gameId;
         this.playerId = playerId;
         this.p1 = p1;
         this.uname = uname;
-        setTitle("TicTacToe Game");
-        setBounds(50, 50, 500, 450);
-        wholeScreen = new GridLayout(1, 2);
-        board = new GridLayout(3, 3);
-        boardPanel = new JPanel();
-        screenPanel = new JPanel();
-        boardPanel.setLayout(board);
-        screenPanel.setLayout(wholeScreen);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 squares[i][j] = new JButton();
+                squares[i][j].setSize(150, 150);
                 // adpated from https://stackoverflow.com/questions/21879243/how-to-create-on-click-event-for-buttons-in-swing
                 squares[i][j].putClientProperty("x", i);
                 squares[i][j].putClientProperty("y", j);
@@ -76,7 +65,7 @@ public class TicTacToe extends JFrame implements ActionListener{
                                     "Error", JOptionPane.INFORMATION_MESSAGE);
                         } else if(answer.equals("1")) {
                             markField(p1, x, y);
-                            curPlayerName.setText("It's the opponents turn.");
+                            curPlayerName.setText(uname + ": It's the opponents turn.");
                             disableButtons();
                         }
                     }
@@ -85,48 +74,19 @@ public class TicTacToe extends JFrame implements ActionListener{
                 boardPanel.add(squares[i][j]);
             }            
         }
-        screenPanel.add(boardPanel);
-        //add(boardPanel);
-        menuPanel.setLayout(new BorderLayout());
-        newGame = new JButton("Resign/Restart");
-        newGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!hasFinished() && p1)
-                    proxy.setGameState(gameId, 2);
-                else if(!hasFinished() && !p1)
-                    proxy.setGameState(gameId, 1);
-                GameList gl = new GameList(playerId, uname);
-                dispose();
-            }
-        });  
-        newGame.setSize(50, 50);
-        if(p1)
-            curPlayerName = new JLabel("It's your turn.");
-        else
-            curPlayerName = new JLabel("It's the opponents turn.");
-        curPlayerName.setSize(50, 50);
-        results = new JLabel(" : : ");
-        menuPanel.add(newGame, BorderLayout.NORTH);
-        menuPanel.add(results, BorderLayout.CENTER);
-        menuPanel.add(curPlayerName, BorderLayout.SOUTH);
-        screenPanel.add(menuPanel);
-        add(screenPanel);
-        pack();
-        if(!p1)
+        if(p1) {
+            curPlayerName.setText(uname + ": It's your turn.");
+            enableButtons();
+        } else {
+            curPlayerName.setText(uname + ": It's the opponents turn.");
             disableButtons();
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
         GameThread updThread = new GameThread(this);
         updThread.start();
+        setVisible(true);
     }
-    
-    @Override
-    public void actionPerformed(ActionEvent e){
-        throw new UnsupportedOperationException("asd");
-    }
-    
-    public int getGameId(){
+
+       public int getGameId(){
         return this.gameId;
     }
     
@@ -167,81 +127,85 @@ public class TicTacToe extends JFrame implements ActionListener{
         }
     }
     
-    public boolean hasFinished() {
-        if (hasWon(true)) {
-            System.out.println("P1 won");
-            return true;
-        }
-        if (hasWon(false)) {
-            System.out.println("P2 won");
-            return true;
-        }
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if(squares[i][j].getText().equals("")){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     
-    public boolean hasWon(boolean p1) {
-        String p = p1 ? "X" : "O";
-        // check lines
-        for (int i = 0; i < 3; i++) {
-            boolean winningLine = true;
-            for (int j = 0; j < 3; j++) {
-                if(!squares[i][j].getText().equals(p)){
-                    winningLine = false;
-                    break;
-                }
-            }
-            if (winningLine){
-                System.out.println("Won by line");
-                return true;
-            }
-                
-        }
-        // check columns
-        for (int i = 0; i < 3; i++) {
-            boolean winningCol = true;
-            for (int j = 0; j < 3; j++) {
-                if(!squares[j][i].getText().equals(p)){
-                    winningCol = false;
-                    break;
-                }
-            }
-            if (winningCol){
-                System.out.println("Won by column");
-                return true;
-            }
-        }
-        // check diagonal
-        boolean winningDiag = true;
-        for (int i = 0; i < 3; i++) {
-            if(!squares[i][i].getText().equals(p)){
-                winningDiag = false;
-                break;
-            }
-        }
-        if (winningDiag){
-            System.out.println("Won by diag");
-            return true;
-        }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-        // check other diag
-        winningDiag = true;
-        for (int i = 0; i < 3; i++) {
-            if(!squares[i][2-i].getText().equals(p)){
-                winningDiag = false;
-                break;
+        boardPanel = new javax.swing.JPanel();
+        curPlayerName = new javax.swing.JLabel();
+        leaveBtn = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        boardPanel.setPreferredSize(new java.awt.Dimension(450, 450));
+
+        javax.swing.GroupLayout boardPanelLayout = new javax.swing.GroupLayout(boardPanel);
+        boardPanel.setLayout(boardPanelLayout);
+        boardPanelLayout.setHorizontalGroup(
+            boardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
+        boardPanelLayout.setVerticalGroup(
+            boardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
+
+        leaveBtn.setText("Leave");
+        leaveBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leaveBtnActionPerformed(evt);
             }
-        }
-        if (winningDiag){
-            System.out.println("Won by diag");
-            return true;
-        }
-        return false;
-    }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(curPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(leaveBtn)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(leaveBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(curPlayerName)
+                .addGap(0, 29, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void leaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveBtnActionPerformed
+        // if leaving game without finishing set game state to lost
+        if (Integer.valueOf(proxy.checkWin(gameId)) <= 0 && p1)
+            proxy.setGameState(gameId, 2);
+        else if(Integer.valueOf(proxy.checkWin(gameId)) <= 0 && !p1)
+            proxy.setGameState(gameId, 1);
+        GameList gl = new GameList(playerId, uname);
+        dispose();
+    }//GEN-LAST:event_leaveBtnActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel boardPanel;
+    private javax.swing.JLabel curPlayerName;
+    private javax.swing.JButton leaveBtn;
+    // End of variables declaration//GEN-END:variables
 }

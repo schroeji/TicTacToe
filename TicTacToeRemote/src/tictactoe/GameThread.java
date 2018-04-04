@@ -53,16 +53,12 @@ public class GameThread extends Thread {
             // find id of player who played the last move
             String[] last_move = board_arr[board_arr.length - 1].split(",");
             int last_player = Integer.valueOf(last_move[0]);
-            if (tictac.hasFinished()){
+            int endState = Integer.valueOf(proxy.checkWin(gameId));
+            if (endState != 0){
                 tictac.setCurPlayerText("Game Over");
                 tictac.disableButtons();
                 end = true;
-                if (tictac.hasWon(true))
-                    proxy.setGameState(gameId, 1);
-                else if (tictac.hasWon(false))
-                    proxy.setGameState(gameId, 2);
-                else 
-                    proxy.setGameState(gameId, 3);
+                proxy.setGameState(gameId, endState);
             } else if (last_player != playerId){   
                 tictac.enableButtons();
                 tictac.setCurPlayerText("It's your turn.");

@@ -23,7 +23,7 @@ public class GameListThread extends Thread {
         boolean end = false;
         while (!Thread.currentThread().isInterrupted() && !end){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch(Exception e){}
             gameList.refreshGames();
         }
