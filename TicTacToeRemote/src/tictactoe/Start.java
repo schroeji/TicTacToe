@@ -40,7 +40,7 @@ public class Start extends JFrame implements ActionListener{
         register.addActionListener(new ActionListener() {
             @Override   
             public void actionPerformed(ActionEvent e) {
-                Register register = new Register();
+                RegisterTicTacToe register = new RegisterTicTacToe();
                 dispose();
             }
         });    
@@ -49,7 +49,7 @@ public class Start extends JFrame implements ActionListener{
         login.addActionListener(new ActionListener() {
             @Override   
             public void actionPerformed(ActionEvent e) {
-                Login login = new Login();
+                LoginTicTacToe login = new LoginTicTacToe();
                 dispose();
             }
         });  

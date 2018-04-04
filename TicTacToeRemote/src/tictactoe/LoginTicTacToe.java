@@ -14,29 +14,30 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.lang.UnsupportedOperationException;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import tictactoe.TTTWebService;
+import tictactoe.TTTWebService_Service;
 
 /**
  *
  * @author hidden
  */
-public class Register extends JFrame implements ActionListener{
+public class LoginTicTacToe extends JFrame implements ActionListener{
     private JButton clear;
     private JButton submit;
-    private JTextField name;
-    private JTextField surname;
-    private JTextField email;
     private JTextField username;
     private JPasswordField password;
     private GridLayout wholeScreen;
     private JPanel screenPanel;
+    TTTWebService_Service service = new TTTWebService_Service();
+    TTTWebService proxy = service.getTTTWebServicePort();
 
-    public Register() {
-        setTitle("Register new account");
+    public LoginTicTacToe() {
+        setTitle("Login");
         setBounds(50, 50, 500, 450);
-        DataBase db = new DataBase();
-        wholeScreen = new GridLayout(2, 4);
+        wholeScreen = new GridLayout(2, 2);
         screenPanel = new JPanel();
         screenPanel.setLayout(wholeScreen);
         //add(boardPanel);
@@ -53,20 +54,19 @@ public class Register extends JFrame implements ActionListener{
         submit.addActionListener(new ActionListener() {
             @Override   
             public void actionPerformed(ActionEvent e) {
-                int id = db.addUser(name.getText(), surname.getText(), email.getText(), 
-                        username.getText(), password.getText());
-                GameList gl = new GameList(id);
-                dispose();
+                int id = proxy.login(username.getText(), password.getText());
+                if (id > 0) {
+                    GameList gameList = new GameList(id);
+                    //gameList.setVisible(true);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid login.",
+                            "Error", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
-        }); 
-        name = new JTextField("Name");
-        surname = new JTextField("Surname");
-        email = new JTextField("E-Mail");
+        });  
         username = new JTextField("Username");
         password = new JPasswordField();
-        screenPanel.add(name);
-        screenPanel.add(surname);
-        screenPanel.add(email);
         screenPanel.add(username);
         screenPanel.add(password);
         screenPanel.add(clear);

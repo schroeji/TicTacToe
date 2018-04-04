@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.lang.UnsupportedOperationException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -33,6 +34,8 @@ public class TicTacToe extends JFrame implements ActionListener{
     private int gameId;
     private int playerId;
     private boolean p1;
+    TTTWebService_Service service = new TTTWebService_Service();
+    TTTWebService proxy = service.getTTTWebServicePort();
     
     public TicTacToe(int gameId, int playerId, boolean p1) {
         this.gameId = gameId;
@@ -44,7 +47,6 @@ public class TicTacToe extends JFrame implements ActionListener{
         board = new GridLayout(3, 3);
         boardPanel = new JPanel();
         screenPanel = new JPanel();
-        DataBase db = new DataBase();
         boardPanel.setLayout(board);
         screenPanel.setLayout(wholeScreen);
         for (int i = 0; i < 3; i++) {
@@ -60,7 +62,17 @@ public class TicTacToe extends JFrame implements ActionListener{
                         JButton button = (JButton)e.getSource();
                         int x = (int) button.getClientProperty("x");
                         int y = (int) button.getClientProperty("y");
-                        if(db.playMove(gameId, playerId, x, y)) {
+                        String answer = proxy.takeSquare(x, y, gameId, playerId);
+                        if (answer.equals("ERROR")) {
+                            JOptionPane.showMessageDialog(null, "General error.",
+                                    "Error", JOptionPane.INFORMATION_MESSAGE);
+                        } else if (answer.equals("ERROR-TAKEN")) {
+                            JOptionPane.showMessageDialog(null, "Square already taken.",
+                                    "Error", JOptionPane.INFORMATION_MESSAGE);
+                        } else if (answer.equals("ERROR-DB")) {
+                            JOptionPane.showMessageDialog(null, "Could not connect to database.",
+                                    "Error", JOptionPane.INFORMATION_MESSAGE);
+                        } else if(answer.equals("1")) {
                             markField(p1, x, y);
                             curPlayerName.setText("It's the opponents turn.");
                             disableButtons();
@@ -75,6 +87,17 @@ public class TicTacToe extends JFrame implements ActionListener{
         //add(boardPanel);
         menuPanel.setLayout(new BorderLayout());
         newGame = new JButton("Resign/Restart");
+        newGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!hasFinished() && p1)
+                    proxy.setGameState(gameId, 2);
+                else if(!hasFinished() && !p1)
+                    proxy.setGameState(gameId, 1);
+                GameList gl = new GameList(playerId);
+                dispose();
+            }
+        });  
         newGame.setSize(50, 50);
         if(p1)
             curPlayerName = new JLabel("It's your turn.");
@@ -172,8 +195,11 @@ public class TicTacToe extends JFrame implements ActionListener{
                     break;
                 }
             }
-            if (winningLine)
+            if (winningLine){
+                System.out.println("Won by line");
                 return true;
+            }
+                
         }
         // check columns
         for (int i = 0; i < 3; i++) {
@@ -184,28 +210,35 @@ public class TicTacToe extends JFrame implements ActionListener{
                     break;
                 }
             }
-            if (winningCol)
+            if (winningCol){
+                System.out.println("Won by column");
                 return true;
+            }
         }
         // check diagonal
+        boolean winningDiag = true;
         for (int i = 0; i < 3; i++) {
-            boolean winningDiag = true;
             if(!squares[i][i].getText().equals(p)){
                 winningDiag = false;
                 break;
             }
-            if (winningDiag)
-                return true;
         }
+        if (winningDiag){
+            System.out.println("Won by diag");
+            return true;
+        }
+
         // check other diag
+        winningDiag = true;
         for (int i = 0; i < 3; i++) {
-            boolean winningDiag = true;
             if(!squares[i][2-i].getText().equals(p)){
                 winningDiag = false;
                 break;
             }
-            if (winningDiag)
-                return true;
+        }
+        if (winningDiag){
+            System.out.println("Won by diag");
+            return true;
         }
         return false;
     }

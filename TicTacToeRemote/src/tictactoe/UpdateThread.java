@@ -5,6 +5,7 @@
  */
 package tictactoe;
 
+import java.awt.GridLayout;
 import java.util.ArrayList;
 
 /**
@@ -16,39 +17,53 @@ public class UpdateThread extends Thread {
     private int gameId;
     private boolean p1;
     private TicTacToe tictac;
-    private DataBase db;
+    TTTWebService_Service service = new TTTWebService_Service();
+    TTTWebService proxy = service.getTTTWebServicePort();
     public UpdateThread(TicTacToe tictac){
         this.tictac = tictac;
         playerId = tictac.getplayerId();
         gameId = tictac.getGameId();
         p1 = tictac.getP1();
-        this.db = new DataBase();
     }
     
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()){
+        boolean end = false;
+        while (!Thread.currentThread().isInterrupted() && !end){
             try {
                 Thread.sleep(1000);
             } catch(Exception e){
                 
             }
             // format move[0] = playerID ; move[1] = x; move[2] = y
-            ArrayList<int[]> moves = db.getMoves(gameId);
-            if (moves.isEmpty())
+            String board = proxy.getBoard(gameId);
+            if (board.equals("ERROR-NOMOVES") || 
+                board.equals("ERROR-DB"))
                 continue;
             
-            for (int[] move : moves) {
-                if (playerId == move[0])
-                    tictac.markField(p1, move[1], move[2]);
-                else
-                    tictac.markField(!p1, move[1], move[2]);
-            }
-            if(tictac.hasFinished()){
-                tictac.setCurPlayerText("Game Over");
-            }
+            String[] board_arr = board.split("\\n");
             
-            if (moves.get(moves.size() - 1)[0] != playerId){   
+            for (String move_str : board_arr) {
+                String[] move = move_str.split(",");
+                if (playerId == Integer.valueOf(move[0]))
+                    tictac.markField(p1, Integer.valueOf(move[1]), Integer.valueOf(move[2]));
+                else
+                    tictac.markField(!p1, Integer.valueOf(move[1]), Integer.valueOf(move[2]));
+            }
+            // find id of player who played the last move
+            String[] last_move = board_arr[board_arr.length - 1].split(",");
+            int last_player = Integer.valueOf(last_move[0]);
+            if (tictac.hasFinished()){
+                tictac.setCurPlayerText("Game Over");
+                tictac.disableButtons();
+                end = true;
+                if (tictac.hasWon(true))
+                    proxy.setGameState(gameId, 1);
+                else if (tictac.hasWon(false))
+                    proxy.setGameState(gameId, 2);
+                else 
+                    proxy.setGameState(gameId, 3);
+            } else if (last_player != playerId){   
                 tictac.enableButtons();
                 tictac.setCurPlayerText("It's your turn.");
             }

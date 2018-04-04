@@ -85,7 +85,7 @@ public class DataBase {
             preparedStatement.executeUpdate();
             resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
-            System.out.println(resultSet.getInt(1));
+            //System.out.println(resultSet.getInt(1));
             return resultSet.getInt(1);
                     
         } catch(Exception e) {
@@ -120,6 +120,22 @@ public class DataBase {
             // maybe use another game state number here
             preparedStatement.setInt(2, 0);
             preparedStatement.setInt(3, gameId);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.err.print(e);
+            return false;
+        }
+    }
+    
+    public boolean setGameState(int gameID, int gs) {
+        try {
+            // Update databse entry of game with gameId and set p2 to playerId
+            preparedStatement = connect.prepareStatement("update games "
+                    + "SET gameState=? where autoID=?");
+            preparedStatement.setInt(1, gs);
+            // maybe use another game state number here
+            preparedStatement.setInt(2, gameID);
             preparedStatement.executeUpdate();
             return true;
         } catch(Exception e) {
