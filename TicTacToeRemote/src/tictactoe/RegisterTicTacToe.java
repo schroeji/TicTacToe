@@ -147,6 +147,7 @@ public class RegisterTicTacToe extends javax.swing.JFrame {
         }
         int id = Integer.valueOf(id_str);
         if (id > 0) {
+            // if registration was correct directly login
             GameList gl = new GameList(id, username.getText());
             dispose();
         }

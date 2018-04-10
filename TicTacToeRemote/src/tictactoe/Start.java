@@ -84,11 +84,13 @@ public class Start extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+        // create Login screen
         LoginTicTacToe l = new LoginTicTacToe();
         dispose();
     }//GEN-LAST:event_loginActionPerformed
 
     private void registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerActionPerformed
+        //create registration screen
         RegisterTicTacToe register = new RegisterTicTacToe();
         dispose();
     }//GEN-LAST:event_registerActionPerformed

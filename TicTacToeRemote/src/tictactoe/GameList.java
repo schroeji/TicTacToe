@@ -18,8 +18,11 @@ import javax.swing.table.DefaultTableModel;
  * @author hidden
  */
 public class GameList extends javax.swing.JFrame {
+    // id of logged in player
     private int playerId;
+    // game id of the game seleted in the list
     private int selectedGid = -1;
+    private int selectedRow = -1;
     TTTWebService proxy = new TTTWebService_Service().getTTTWebServicePort();
     private String uname;
     /**
@@ -30,6 +33,7 @@ public class GameList extends javax.swing.JFrame {
         this.uname = uname;
         initComponents();
         setVisible(true);
+        // get games and check for errors
         String games_string = proxy.showOpenGames();
         if (games_string.equals("ERROR-NOGAMES")) {
             JOptionPane.showMessageDialog(null, "No open games.",
@@ -38,16 +42,20 @@ public class GameList extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Could not access database.",
                     "Error", JOptionPane.INFORMATION_MESSAGE);
         } else {
+            // if no errors occured show the games
             refreshGames();
         }
+        // listen for clicks in the table to set the selectedGid
         gameList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {                                    
                 JTable source = (JTable)evt.getSource();
                 int row = source.rowAtPoint(evt.getPoint());
                 int column = 0;
                 selectedGid = Integer.parseInt(source.getModel().getValueAt(row, column).toString());
+                selectedRow = row;
             } 
         });
+        // start background thread to refresh games list every 10 seconds
         GameListThread glThread = new GameListThread(this);
         glThread.start();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,32 +148,44 @@ public class GameList extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // function to get open games and show them in the table
     public void refreshGames() {
+        // get games from web service
         String games_string = proxy.showOpenGames();
         String[] games_arr = games_string.split("\\n");
         String[][] games = new String[games_arr.length][];
         int i = 0;
+        // prepare data for display
         for (String game : games_arr) {
             games[i] = game.split(",");
             ++i;
         }
+        // show table
         String[] columns = {"GameID", "Username", "Timestamp"};
         DefaultTableModel dataSet = new DefaultTableModel(games, columns);
         gameList.setModel(dataSet);
         gameList.repaint();
-        
+        // select the previously selected game again
+        if (selectedRow >= 0 && selectedRow < games.length) 
+            gameList.setRowSelectionInterval(selectedRow, selectedRow);
     }
     
     private void joinButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinButtonActionPerformed
+        // join currently selected game
         if (selectedGid > 0){
             if (proxy.joinGame(playerId, Integer.valueOf(selectedGid)).equals("1")) {
-                TicTacToe tic = new TicTacToe(selectedGid, playerId, false, this.uname);
+                String gameUser = gameList.getModel().getValueAt(selectedRow, 1).toString();
+                if (gameUser.equals(uname)) // if user is already player in the game 
+                    new TicTacToe(selectedGid, playerId, true, this.uname);
+                else // if user is not in the game
+                    new TicTacToe(selectedGid, playerId, false, this.uname);
                 dispose();
             }
         }
     }//GEN-LAST:event_joinButtonActionPerformed
-
+    // create a new game button code
     private void createGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGameActionPerformed
+        // create new game or catch errors if not successful
         String id_str = proxy.newGame(playerId);
         if (id_str.equals("ERROR-NOTFOUND")){
             JOptionPane.showMessageDialog(null, "Could not find game id.",
@@ -184,6 +204,7 @@ public class GameList extends javax.swing.JFrame {
                     "Error", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
+        // if successful create game screen
         int gid = Integer.valueOf(id_str);
         if (gid > 0) {
             TicTacToe tic = new TicTacToe(gid, playerId, true, uname);                    
@@ -193,10 +214,12 @@ public class GameList extends javax.swing.JFrame {
     }//GEN-LAST:event_createGameActionPerformed
 
     private void leaderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaderButtonActionPerformed
+        // show leaderboard
         new LeaderBoard();
     }//GEN-LAST:event_leaderButtonActionPerformed
 
     private void scoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreButtonActionPerformed
+        // show scoreboard
         new ScoreBoard(playerId, uname);
     }//GEN-LAST:event_scoreButtonActionPerformed
 

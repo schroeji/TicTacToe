@@ -20,8 +20,8 @@ public class GameListThread extends Thread {
     
     @Override
     public void run() {
-        boolean end = false;
-        while (!Thread.currentThread().isInterrupted() && !end){
+        // call refresh every 10 seconds
+        while (!Thread.currentThread().isInterrupted()){
             try {
                 Thread.sleep(10000);
             } catch(Exception e){}

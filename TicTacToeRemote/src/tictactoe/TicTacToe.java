@@ -39,11 +39,13 @@ public class TicTacToe extends javax.swing.JFrame {
         this.playerId = playerId;
         this.p1 = p1;
         this.uname = uname;
+        // create 3x3 buttons
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 squares[i][j] = new JButton();
                 squares[i][j].setSize(150, 150);
-                // adpated from https://stackoverflow.com/questions/21879243/how-to-create-on-click-event-for-buttons-in-swing
+                // add a property for each button which contains the button location
+                // i.e. row and column
                 squares[i][j].putClientProperty("x", i);
                 squares[i][j].putClientProperty("y", j);
                 squares[i][j].addActionListener(new ActionListener() {
@@ -53,6 +55,7 @@ public class TicTacToe extends javax.swing.JFrame {
                         JButton button = (JButton)e.getSource();
                         int x = (int) button.getClientProperty("x");
                         int y = (int) button.getClientProperty("y");
+                        // try to take square and check for errors
                         String answer = proxy.takeSquare(x, y, gameId, playerId);
                         if (answer.equals("ERROR")) {
                             JOptionPane.showMessageDialog(null, "General error.",
@@ -64,6 +67,7 @@ public class TicTacToe extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(null, "Could not connect to database.",
                                     "Error", JOptionPane.INFORMATION_MESSAGE);
                         } else if(answer.equals("1")) {
+                            // if successfull mark the field
                             markField(p1, x, y);
                             curPlayerName.setText(uname + ": It's the opponents turn.");
                             disableButtons();
@@ -75,9 +79,11 @@ public class TicTacToe extends javax.swing.JFrame {
             }            
         }
         if(p1) {
+            // if player is first player allow him to start
             curPlayerName.setText(uname + ": It's your turn.");
             enableButtons();
         } else {
+            // if not block the game until opponent took a square
             curPlayerName.setText(uname + ": It's the opponents turn.");
             disableButtons();
         }
@@ -86,7 +92,7 @@ public class TicTacToe extends javax.swing.JFrame {
         setVisible(true);
     }
 
-       public int getGameId(){
+    public int getGameId(){
         return this.gameId;
     }
     
@@ -98,7 +104,12 @@ public class TicTacToe extends javax.swing.JFrame {
         return this.playerId;
     }
      
+    public String getUname(){
+        return this.uname;
+    }
+    
     public void markField(boolean p1, int x, int y) {
+        // take square
         if (p1) {
             squares[x][y].setText("X");
         } else {
@@ -195,10 +206,27 @@ public class TicTacToe extends javax.swing.JFrame {
 
     private void leaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveBtnActionPerformed
         // if leaving game without finishing set game state to lost
-        if (Integer.valueOf(proxy.checkWin(gameId)) <= 0 && p1)
-            proxy.setGameState(gameId, 2);
-        else if(Integer.valueOf(proxy.checkWin(gameId)) <= 0 && !p1)
-            proxy.setGameState(gameId, 1);
+        try {
+            String win = proxy.checkWin(gameId);
+            System.out.println(win);
+            if (win.equals("ERROR-NOMOVES")) { // game hast not started yet
+            
+            } else if(win.equals("ERROR-DB")) {
+                JOptionPane.showMessageDialog(null, "Could not connect to database.",
+                        "Error", JOptionPane.INFORMATION_MESSAGE);
+            } else if(win.equals("ERROR-NOGAME")) {
+                JOptionPane.showMessageDialog(null, "Could not find game.",
+                            "Error", JOptionPane.INFORMATION_MESSAGE);
+            } else if(win.equals("ERROR-RETRIEVE")) {
+                JOptionPane.showMessageDialog(null, "Could not game details.",
+                            "Error", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                if (Integer.valueOf(win) <= 0 && p1)
+                    proxy.setGameState(gameId, 2);
+                else if(Integer.valueOf(win) <= 0 && !p1)
+                    proxy.setGameState(gameId, 1);
+            }
+        } catch (Exception e) {}
         GameList gl = new GameList(playerId, uname);
         dispose();
     }//GEN-LAST:event_leaveBtnActionPerformed

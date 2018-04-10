@@ -21,6 +21,7 @@ public class LeaderBoard extends javax.swing.JFrame {
      */
     public LeaderBoard() {
         initComponents();
+        // get all games or catch errors
         String league_str = proxy.leagueTable();
         if (league_str.equals("ERROR-NOGAMES")) {
             JOptionPane.showMessageDialog(null, "No games played so far.",
@@ -31,7 +32,7 @@ public class LeaderBoard extends javax.swing.JFrame {
                     "Error", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            System.out.println(league_str);
+            // prepare string
             String[] league_arr = league_str.split("\\n");
             String[][] league = new String[league_arr.length][];
             int i = 0;
@@ -39,6 +40,7 @@ public class LeaderBoard extends javax.swing.JFrame {
                 league[i] = match.split(",");
                 i++;
             }
+            // calculate stats and show table
             String[][] stats = calcStats(league);
             String[] columns = {"Username", "Wins", "Losses", "Draws"};
             DefaultTableModel dataSet = new DefaultTableModel(stats, columns);
@@ -102,6 +104,8 @@ public class LeaderBoard extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     private String[][] calcStats(String[][] games) {
+        // calculate stats for all users:
+        // iterate thorugh all games get the result and count the wins/losses
         HashMap<String, Integer[]> stats = new HashMap<>();
         for (String match[] : games) {
             String u1 = match[1];

@@ -135,6 +135,8 @@ public class ScoreBoard extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_closeButtonActionPerformed
     private int[] calcStatsUser(String[][] games, String uname) {
+        // calculate the stats for one user:
+        // iterate through all games of the user, get the gameState and count the reuslts
         int[] result = {0, 0, 0}; // wins, losses, draws
         for (String[] game : games){
             String state_str = proxy.getGameState(Integer.valueOf(game[0]));
@@ -147,11 +149,11 @@ public class ScoreBoard extends javax.swing.JFrame {
             }
             int state = Integer.valueOf(state_str);
             switch(state){
-                case 1:
-                    if (p1.equals(uname))
-                        ++result[0];
-                    else if (p2.equals(uname))
-                        ++result[1];
+                case 1:  // if first player won
+                    if (p1.equals(uname)) // and user is first player
+                        ++result[0]; // increment wins
+                    else if (p2.equals(uname)) // user is second player
+                        ++result[1]; // increment loss
                     break;
                 case 2:
                     if (p1.equals(uname))
@@ -159,7 +161,7 @@ public class ScoreBoard extends javax.swing.JFrame {
                     else if (p2.equals(uname))
                         ++result[0];
                     break;
-                case 3:
+                case 3: //
                     ++result[2];
                     break;
                 default:

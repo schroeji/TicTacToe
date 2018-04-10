@@ -121,6 +121,7 @@ public class LoginTicTacToe extends javax.swing.JFrame {
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
         int id = proxy.login(username.getText(), password.getText());
         if (id > 0) {
+            // if credentials were correct login in the user
             GameList gameList = new GameList(id, username.getText());
             //gameList.setVisible(true);
             dispose();
