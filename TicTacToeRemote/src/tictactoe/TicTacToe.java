@@ -31,8 +31,7 @@ public class TicTacToe extends javax.swing.JFrame {
 
     public TicTacToe(int gameId, int playerId, boolean p1, String uname) {
         initComponents();
-        setTitle("TicTacToe Game");
-        //setBounds(50, 50, 500, 450);
+        setLocationRelativeTo(null);
         board = new GridLayout(3, 3);
         boardPanel.setLayout(board);
         this.gameId = gameId;
@@ -153,6 +152,7 @@ public class TicTacToe extends javax.swing.JFrame {
         leaveBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe");
 
         boardPanel.setPreferredSize(new java.awt.Dimension(450, 450));
 
@@ -207,28 +207,28 @@ public class TicTacToe extends javax.swing.JFrame {
     private void leaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveBtnActionPerformed
         // if leaving game without finishing set game state to lost
         try {
-            String win = proxy.checkWin(gameId);
-            System.out.println(win);
-            if (win.equals("ERROR-NOMOVES")) { // game hast not started yet
-            
-            } else if(win.equals("ERROR-DB")) {
-                JOptionPane.showMessageDialog(null, "Could not connect to database.",
-                        "Error", JOptionPane.INFORMATION_MESSAGE);
-            } else if(win.equals("ERROR-NOGAME")) {
-                JOptionPane.showMessageDialog(null, "Could not find game.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-            } else if(win.equals("ERROR-RETRIEVE")) {
-                JOptionPane.showMessageDialog(null, "Could not game details.",
-                            "Error", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                if (Integer.valueOf(win) <= 0 && p1)
-                    proxy.setGameState(gameId, 2);
-                else if(Integer.valueOf(win) <= 0 && !p1)
-                    proxy.setGameState(gameId, 1);
-            }
-        } catch (Exception e) {}
-        GameList gl = new GameList(playerId, uname);
-        dispose();
+           String win = proxy.checkWin(gameId);
+           if(win.equals("ERROR-DB")) {
+               JOptionPane.showMessageDialog(null, "Could not connect to database.",
+                       "Error", JOptionPane.INFORMATION_MESSAGE);
+           } else if(win.equals("ERROR-NOGAME")) {
+               JOptionPane.showMessageDialog(null, "Could not find game.",
+                           "Error", JOptionPane.INFORMATION_MESSAGE);
+           } else if(win.equals("ERROR-RETRIEVE")) {
+               JOptionPane.showMessageDialog(null, "Could not game details.",
+                           "Error", JOptionPane.INFORMATION_MESSAGE);
+           } else {
+               if (Integer.valueOf(win) <= 0 && p1)
+                   proxy.setGameState(gameId, 2);
+               else if(Integer.valueOf(win) <= 0 && !p1)
+                   proxy.setGameState(gameId, 1);
+           }
+       } catch (Exception e) {
+           // Exception occurs when game has not started yet
+           // do nothing so the player can rejoin if he wants to
+       }
+       GameList gl = new GameList(playerId, uname);
+       dispose();
     }//GEN-LAST:event_leaveBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -21,6 +21,7 @@ public class LeaderBoard extends javax.swing.JFrame {
      */
     public LeaderBoard() {
         initComponents();
+        setLocationRelativeTo(null);
         // get all games or catch errors
         String league_str = proxy.leagueTable();
         if (league_str.equals("ERROR-NOGAMES")) {
@@ -64,6 +65,7 @@ public class LeaderBoard extends javax.swing.JFrame {
         closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe - Leaderboard");
 
         leaderBoard.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -147,7 +149,7 @@ public class LeaderBoard extends javax.swing.JFrame {
         // convert back to String[][]
         String[][] result = new String[stats.size()][4];
         int i = 0;
-        for (String user : stats.keySet()){
+        for (String user : stats.keySet()) {
             Integer[] tmp = stats.get(user);
             String[] tmp_str = {user, String.valueOf(tmp[0]), String.valueOf(tmp[1]),
                                 String.valueOf(tmp[2])};

@@ -23,7 +23,7 @@ public class GameList extends javax.swing.JFrame {
     // game id of the game seleted in the list
     private int selectedGid = -1;
     private int selectedRow = -1;
-    TTTWebService proxy = new TTTWebService_Service().getTTTWebServicePort();
+    TTTWebService proxy;
     private String uname;
     /**
      * Creates new form GameList
@@ -32,7 +32,9 @@ public class GameList extends javax.swing.JFrame {
         this.playerId = pid;
         this.uname = uname;
         initComponents();
+        setLocationRelativeTo(null);
         setVisible(true);
+        proxy = new TTTWebService_Service().getTTTWebServicePort();
         // get games and check for errors
         String games_string = proxy.showOpenGames();
         if (games_string.equals("ERROR-NOGAMES")) {
@@ -78,6 +80,7 @@ public class GameList extends javax.swing.JFrame {
         scoreButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe - GameList");
 
         gameList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -123,19 +126,20 @@ public class GameList extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(joinButton)
                     .addComponent(createGame)
                     .addComponent(leaderButton)
-                    .addComponent(scoreButton)))
+                    .addComponent(scoreButton))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(66, 66, 66)
+                .addGap(50, 50, 50)
                 .addComponent(joinButton)
                 .addGap(18, 18, 18)
                 .addComponent(createGame)
@@ -173,12 +177,15 @@ public class GameList extends javax.swing.JFrame {
     private void joinButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinButtonActionPerformed
         // join currently selected game
         if (selectedGid > 0){
-            if (proxy.joinGame(playerId, Integer.valueOf(selectedGid)).equals("1")) {
-                String gameUser = gameList.getModel().getValueAt(selectedRow, 1).toString();
-                if (gameUser.equals(uname)) // if user is already player in the game 
-                    new TicTacToe(selectedGid, playerId, true, this.uname);
-                else // if user is not in the game
-                    new TicTacToe(selectedGid, playerId, false, this.uname);
+            String gameUser = gameList.getModel().getValueAt(selectedRow, 1).toString();
+            if (gameUser.equals(uname)) {  // if user is already player in the game 
+                TicTacToe tictac = new TicTacToe(selectedGid, playerId, true, this.uname);
+                tictac.disableButtons();
+                tictac.setCurPlayerText(uname + ": It's the opponents turn.");
+                dispose();
+            }
+            else if (proxy.joinGame(playerId, Integer.valueOf(selectedGid)).equals("1")) {
+                new TicTacToe(selectedGid, playerId, false, this.uname);
                 dispose();
             }
         }

@@ -12,13 +12,15 @@ import javax.swing.JOptionPane;
  * @author hidden
  */
 public class LoginTicTacToe extends javax.swing.JFrame {
-    TTTWebService proxy = new TTTWebService_Service().getTTTWebServicePort();
+    TTTWebService proxy;
     /**
      * Creates new form LoginTicTacToe
      */
     public LoginTicTacToe() {
         initComponents();
+        setLocationRelativeTo(null);
         setVisible(true);
+        proxy = new TTTWebService_Service().getTTTWebServicePort();
     }
 
     /**
@@ -38,6 +40,7 @@ public class LoginTicTacToe extends javax.swing.JFrame {
         clear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe - Login");
 
         jLabel1.setText("Username:");
 

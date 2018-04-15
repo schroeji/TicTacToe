@@ -19,6 +19,7 @@ public class RegisterTicTacToe extends javax.swing.JFrame {
      */
     public RegisterTicTacToe() {
         initComponents();
+        setLocationRelativeTo(null);
         setVisible(true);
         proxy =  new TTTWebService_Service().getTTTWebServicePort();
     }

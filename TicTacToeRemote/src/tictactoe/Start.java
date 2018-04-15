@@ -16,6 +16,7 @@ public class Start extends javax.swing.JFrame {
      */
     public Start() {
         initComponents();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -33,7 +34,9 @@ public class Start extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe");
         setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
+        setLocation(new java.awt.Point(540, 960));
 
         login.setText("Login");
         login.addActionListener(new java.awt.event.ActionListener() {

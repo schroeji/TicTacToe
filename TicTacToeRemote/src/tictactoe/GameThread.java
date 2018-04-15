@@ -52,7 +52,15 @@ public class GameThread extends Thread {
             // find id of player who played the last move
             String[] last_move = board_arr[board_arr.length - 1].split(",");
             int last_player = Integer.valueOf(last_move[0]);
-            int endState = Integer.valueOf(proxy.checkWin(gameId));
+            String end_str = proxy.checkWin(gameId);
+            if (end_str.equals("ERROR-NOGAME") || 
+                end_str.equals("ERROR-RETRIEVE")|| 
+                end_str.equals("ERROR-DB")){
+                System.err.println(end_str);
+                continue;
+                
+            }
+            int endState = Integer.valueOf(end_str);
             
             if (endState != 0) {
                 // if game is over: set game state and show message

@@ -21,6 +21,7 @@ public class ScoreBoard extends javax.swing.JFrame {
      */
     public ScoreBoard(int pid, String uname) {
         initComponents();
+        setLocationRelativeTo(null);
         String games_str = proxy.showAllMyGames(String.valueOf(pid));
         if (games_str.equals("ERROR-NOGAMES")) {
             JOptionPane.showMessageDialog(null, "No games played so far.",
@@ -31,7 +32,6 @@ public class ScoreBoard extends javax.swing.JFrame {
                     "Error", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            System.out.println(games_str);
             String[] games_arr = games_str.split("\\n");
             String[][] games = new String[games_arr.length][];
             int i = 0;
@@ -65,6 +65,7 @@ public class ScoreBoard extends javax.swing.JFrame {
         closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TicTacToe - Scoreboard");
 
         jLabel1.setText("Wins:");
 
