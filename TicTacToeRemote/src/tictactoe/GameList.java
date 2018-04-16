@@ -32,6 +32,7 @@ public class GameList extends javax.swing.JFrame {
         this.playerId = pid;
         this.uname = uname;
         initComponents();
+        nameLabel.setText(uname);
         setLocationRelativeTo(null);
         setVisible(true);
         proxy = new TTTWebService_Service().getTTTWebServicePort();
@@ -78,6 +79,8 @@ public class GameList extends javax.swing.JFrame {
         joinButton = new javax.swing.JButton();
         leaderButton = new javax.swing.JButton();
         scoreButton = new javax.swing.JButton();
+        loginLabel = new java.awt.Label();
+        nameLabel = new java.awt.Label();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TicTacToe - GameList");
@@ -121,25 +124,38 @@ public class GameList extends javax.swing.JFrame {
             }
         });
 
+        loginLabel.setText("Logged in as:");
+
+        nameLabel.setText("username");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(joinButton)
                     .addComponent(createGame)
-                    .addComponent(leaderButton)
-                    .addComponent(scoreButton))
+                    .addComponent(loginLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(nameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(leaderButton)
+                            .addComponent(scoreButton))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addContainerGap()
+                .addComponent(loginLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(7, 7, 7)
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
                 .addComponent(joinButton)
                 .addGap(18, 18, 18)
                 .addComponent(createGame)
@@ -148,6 +164,8 @@ public class GameList extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(leaderButton))
         );
+
+        nameLabel.getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -236,6 +254,8 @@ public class GameList extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton joinButton;
     private javax.swing.JButton leaderButton;
+    private java.awt.Label loginLabel;
+    private java.awt.Label nameLabel;
     private javax.swing.JButton scoreButton;
     // End of variables declaration//GEN-END:variables
 }

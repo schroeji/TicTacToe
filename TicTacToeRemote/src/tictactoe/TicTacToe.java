@@ -226,6 +226,7 @@ public class TicTacToe extends javax.swing.JFrame {
        } catch (Exception e) {
            // Exception occurs when game has not started yet
            // do nothing so the player can rejoin if he wants to
+           // proxy.deleteGame(gameId, playerId);
        }
        GameList gl = new GameList(playerId, uname);
        dispose();

@@ -25,13 +25,20 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jScrollPane1" pref="582" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="577" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="joinButton" min="-2" max="-2" attributes="0"/>
                   <Component id="createGame" min="-2" max="-2" attributes="0"/>
-                  <Component id="leaderButton" min="-2" max="-2" attributes="0"/>
-                  <Component id="scoreButton" min="-2" max="-2" attributes="0"/>
+                  <Component id="loginLabel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="nameLabel" alignment="0" pref="131" max="32767" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="leaderButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="scoreButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -41,7 +48,11 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="jScrollPane1" min="-2" pref="275" max="-2" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="loginLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+              <Component id="nameLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
               <Component id="joinButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="createGame" min="-2" max="-2" attributes="0"/>
@@ -128,6 +139,19 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="scoreButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="java.awt.Label" name="loginLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Logged in as:"/>
+      </Properties>
+    </Component>
+    <Component class="java.awt.Label" name="nameLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="username"/>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+      </AccessibilityProperties>
     </Component>
   </SubComponents>
 </Form>
