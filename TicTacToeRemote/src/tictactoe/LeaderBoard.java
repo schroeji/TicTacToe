@@ -110,40 +110,47 @@ public class LeaderBoard extends javax.swing.JFrame {
         // iterate thorugh all games get the result and count the wins/losses
         HashMap<String, Integer[]> stats = new HashMap<>();
         for (String match[] : games) {
-            String u1 = match[1];
-            String u2 = match[2];
+            String user1 = match[1];
+            String user2 = match[2];
             int gameState = Integer.valueOf(match[3]);
             // create entries if the don't exist
-            if (!stats.containsKey(u1)) {
+            if (!stats.containsKey(user1)) {
                 Integer[] tmp = {0,0,0};
-                stats.put(u1,tmp);
+                stats.put(user1, tmp);
             }
-            if (!stats.containsKey(u2)){
+            if (!stats.containsKey(user2)){
                 Integer[] tmp = {0,0,0};
-                stats.put(u2,tmp);
+                stats.put(user2,tmp);
             }
             // increment the counters according to the result
-            if (gameState == 1) {// player1 won
-                Integer[] tmp = stats.get(u1);
-                ++tmp[0];
-                stats.put(u1,tmp);
-                tmp = stats.get(u2);
-                ++tmp[1];
-                stats.put(u2,tmp);
-            } else if (gameState == 2) { //player2 won
-                Integer[] tmp = stats.get(u1);
-                ++tmp[1];
-                stats.put(u1,tmp);
-                tmp = stats.get(u2);
-                ++tmp[0];
-                stats.put(u2,tmp);
-            } else if (gameState == 3) { //tie
-                Integer[] tmp = stats.get(u1);
-                ++tmp[2];
-                stats.put(u1,tmp);
-                tmp = stats.get(u2);
-                ++tmp[2];
-                stats.put(u2,tmp);
+            Integer[] tmp;
+            switch (gameState) {
+                case 1:// player1 won
+                    tmp = stats.get(user1);
+                    ++tmp[0];
+                    stats.put(user1, tmp);
+                    tmp = stats.get(user2);
+                    ++tmp[1];
+                    stats.put(user2, tmp);
+                    break;
+                case 2: //player2 won
+                    tmp = stats.get(user1);
+                    ++tmp[1];
+                    stats.put(user1, tmp);
+                    tmp = stats.get(user2);
+                    ++tmp[0];
+                    stats.put(user2, tmp);
+                    break;
+                case 3:  //tie
+                    tmp = stats.get(user1);
+                    ++tmp[2];
+                    stats.put(user1, tmp);
+                    tmp = stats.get(user2);
+                    ++tmp[2];
+                    stats.put(user2, tmp);
+                    break;
+                default:
+                    break;
             }
         }
         // convert back to String[][]
